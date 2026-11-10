@@ -162,13 +162,16 @@ class AudioEngine(
 
         try {
             // Initialize AudioTrack for stereo playback
-            // Left channel = TX tones, Right channel = Target audio
+           // Left channel = TX tones, Right channel = Target audio
+           // تنظیم حالت صوتی برای هدایت به جک هدفون
+audioManager.mode = AudioManager.MODE_NORMAL
+audioManager.isSpeakerphoneOn = false 
             audioTrack = AudioTrack.Builder()
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
+                      
                         .build()
                 )
                 .setAudioFormat(
