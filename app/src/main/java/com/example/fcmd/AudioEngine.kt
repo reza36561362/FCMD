@@ -106,7 +106,7 @@ class AudioEngine(
     private fun updateToneGenerator() {
         if (toneCount == 1) {
             // Single tone at minimum frequency (1000 Hz)
-            multiToneGenerator = MultiToneGenerator(sampleRate, listOf(minFrequency))
+multiToneGenerator = MultiToneGenerator(sampleRate, listOf(minFrequency))
         } else {
             // Multiple tones logarithmically spaced from min to max frequency
             multiToneGenerator = MultiToneGenerator.createLogSpaced(minFrequency, maxFrequency, toneCount, sampleRate)
@@ -161,17 +161,19 @@ class AudioEngine(
         }
 
         try {
+            // ✅ تنظیم حالت صوتی برای هدایت صدا به جک هدفون
+            // این دو خط باعث می‌شوند صدا به جای بلندگو، به هدفون هدایت شود
+            audioManager.mode = AudioManager.MODE_NORMAL
+            audioManager.isSpeakerphoneOn = false
+
             // Initialize AudioTrack for stereo playback
-           // Left channel = TX tones, Right channel = Target audio
-           // تنظیم حالت صوتی برای هدایت به جک هدفون
-audioManager.mode = AudioManager.MODE_NORMAL
-audioManager.isSpeakerphoneOn = false 
+            // Left channel = TX tones, Right channel = Target audio
             audioTrack = AudioTrack.Builder()
                 .setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                      
+                        // ⛔ FLAG_AUDIBILITY_ENFORCED حذف شد تا صدا از بلندگو پخش نشود
                         .build()
                 )
                 .setAudioFormat(
@@ -213,8 +215,7 @@ audioManager.isSpeakerphoneOn = false
             if (multiToneGenerator == null) {
                 updateToneGenerator()
             }
-
-            // Start playback thread
+// Start playback thread
             playbackThread = Thread {
                 playbackLoop()
             }.apply {
@@ -337,8 +338,7 @@ audioManager.isSpeakerphoneOn = false
         var frameCount = 0
 
         Log.d(TAG, "Record loop started (STEREO - L=RX, R=TX_Ref), buffer size: $bufferSize samples, frames: $monoFrames")
-
-        while (isRecording.get()) {
+while (isRecording.get()) {
             val readSamples = audioRecord?.read(buffer, 0, buffer.size) ?: 0
 
             if (readSamples > 0) {
@@ -399,3 +399,6 @@ audioManager.isSpeakerphoneOn = false
                "DSP: ${dspProcessor?.javaClass?.simpleName ?: "None"}"
     }
 }
+
+
+
